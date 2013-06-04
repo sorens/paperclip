@@ -364,6 +364,14 @@ module Paperclip
       @options[:path].respond_to?(:call) ? @options[:path].call(self) : @options[:path]
     end
 
+    def storage_option
+      storage = @options[:storage]
+      if storage.respond_to?(:call)
+        storage = @options[:storage].call(self)
+      end
+      storage.to_s.downcase.camelize
+    end
+
     def ensure_required_accessors! #:nodoc:
       %w(file_name).each do |field|
         unless @instance.respond_to?("#{name}_#{field}") && @instance.respond_to?("#{name}_#{field}=")
@@ -387,7 +395,7 @@ module Paperclip
     end
 
     def initialize_storage #:nodoc:
-      storage_class_name = @options[:storage].to_s.downcase.camelize
+      storage_class_name = storage_option
       begin
         storage_module = Paperclip::Storage.const_get(storage_class_name)
       rescue NameError

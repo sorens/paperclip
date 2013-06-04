@@ -524,6 +524,30 @@ class AttachmentTest < Test::Unit::TestCase
     end
   end
 
+  context "An attachment with :storage that is a proc" do
+    setup do
+      rebuild_model :storage => proc{ |p| :s3 }
+      @dummy = Dummy.new
+      @attachment = @dummy.avatar
+    end
+
+    should "be configured for :s3" do
+      assert @dummy.avatar.is_a?(Paperclip::Storage::S3)
+    end
+  end
+
+  context "An attachment with :storage that is a symbol" do
+    setup do
+      rebuild_model :storage => :s3
+      @dummy = Dummy.new
+      @attachment = @dummy.avatar
+    end
+
+    should "be configured for :s3" do
+      assert @dummy.avatar.is_a?(Paperclip::Storage::S3)
+    end
+  end
+
   context "An attachment with :styles that is a proc" do
     setup do
       rebuild_model :styles => lambda{ |attachment| {:thumb => "50x50#", :large => "400x400"} }
